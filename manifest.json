@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "FACEIT Autopilot",
+  "version": "1.0.0",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApI+Tz69rUupZAYbvme2akW+GiXd6ppNUkysF+8R30qycvuCI+67yXysptcwSITtNM7KJiciUSMZr6Dtr2laeJpW6A5hAcVwltB+qkq1b5XNQdv6Yw2eEMIybA3kWIrwN2aOz8P7sE3YqWAXAcuYrkZkWXsrnf8I42DkD4+FzxkjlwznkjmqitWNMu/5rP6L9kK9f6ReUSY8Fs+TZ71M2/I7dkAQxgui5J6Gy2rQQNDwtgheSLkYCmRESk4IrHLyxTFO+h+5ZL92S9wF6D91FnEQSZaze1XLggj5FD9EWhVo9RjajQmv+jEVkJtHOGkAN7C+EtooBvkL/2mj3fRZd0wIDAQAB",
+  "description": "Auto-accept FACEIT matches and auto-ban maps by your priority list.",
+  "permissions": [
+    "storage"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "FACEIT Autopilot",
+    "default_icon": {
+      "16": "icons/app16.png",
+      "32": "icons/app32.png",
+      "48": "icons/app48.png",
+      "128": "icons/app128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.faceit.com/*"
+      ],
+      "js": [
+        "defaults.js",
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["sounds/*"],
+      "matches": ["https://www.faceit.com/*"]
+    }
+  ],
+  "icons": {
+    "16": "icons/app16.png",
+    "32": "icons/app32.png",
+    "48": "icons/app48.png",
+    "128": "icons/app128.png"
+  }
+}

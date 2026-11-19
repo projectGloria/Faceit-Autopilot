@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; }
+  html, body { overflow: hidden; }
+  body { width: 580px; margin: 0; padding: 16px; background: #161618; color: #eee; font: 13px system-ui, sans-serif; }
+  h1 { display: flex; align-items: center; gap: 10px; font-size: 18px; margin: 0 0 16px; color: #ff5500; }
+  h1 img { width: 40px; height: 40px; border-radius: 8px; }
+  h2 { font-size: 12px; text-transform: uppercase; color: #888; margin: 14px 0 6px; letter-spacing: .02em; }
+
+  /* Two equal columns of equal height */
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .col { display: flex; flex-direction: column; min-width: 0; }
+  .col > h2:first-child { margin-top: 0; }
+
+  .card { background: #1e1e21; border: 1px solid #2a2a2e; border-radius: 8px; padding: 0 12px; }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 42px; padding: 6px 0; font-size: 14px; border-top: 1px solid #2a2a2e; cursor: pointer; }
+  .card .row:first-child { border-top: 0; }
+  .row.sub { min-height: 36px; padding: 0 0 6px; border-top: 0; color: #aaa; font-size: 13px; cursor: default; }
+
+  /* Controls: one height, one right edge */
+  input[type=number], select, #soundTest { height: 28px; border-radius: 5px; font: inherit; }
+  input[type=number], select { background: #2a2a2e; color: #eee; border: 1px solid #3a3a3f; }
+  input[type=number] { width: 64px; padding: 0 6px; text-align: center; appearance: textfield; -moz-appearance: textfield; }
+  input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  input[type=number]:focus, select:focus { outline: none; border-color: #ff5500; }
+  .pick { display: flex; gap: 6px; align-items: center; min-width: 0; }
+  select { width: 130px; padding: 0 4px; }
+  #soundTest { width: 28px; flex: none; background: #333; color: #eee; border: 0; cursor: pointer; font-size: 11px; }
+  #soundTest:hover, #soundTest.on { background: #ff5500; }
+
+  input[type=checkbox] { appearance: none; position: relative; flex: none; width: 34px; height: 18px; margin: 0; background: #444; border-radius: 9px; cursor: pointer; transition: background .15s; }
+  input[type=checkbox]::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; background: #fff; border-radius: 50%; transition: left .15s; }
+  input[type=checkbox]:checked { background: #ff5500; }
+  input[type=checkbox]:checked::after { left: 18px; }
+
+  /* Ban list stretches to the left column's height */
+  ol { flex: 1; display: flex; flex-direction: column; gap: 5px; margin: 0; padding: 0; list-style: none; }
+  li { flex: 1; display: flex; align-items: center; gap: 12px; background: #1e1e21; border: 1px solid #2a2a2e; padding: 4px 12px; border-radius: 8px; font-size: 16px; font-weight: 500; }
+  li .n { color: #ff5500; width: 16px; font-size: 15px; text-align: center; }
+  li .icon { width: 42px; height: 42px; object-fit: contain; }
+  li .icon:not([src]) { visibility: hidden; }
+  li .name { flex: 1; }
+  li button { background: #333; color: #eee; border: 0; border-radius: 5px; cursor: pointer; width: 28px; height: 28px; }
+  li button:hover { background: #ff5500; }
+</style>
+</head>
+<body>
+  <h1><img src="icons/app128.png" alt="">FACEIT Autopilot</h1>
+  <div class="cols">
+  <div class="col">
+  <h2>General</h2>
+  <div class="card">
+    <label class="row">Enabled <input type="checkbox" id="enabled"></label>
+  </div>
+
+  <h2>Match</h2>
+  <div class="card">
+    <label class="row">Auto accept match <input type="checkbox" id="autoAccept"></label>
+    <label class="row sub">Delay (seconds) <input type="number" id="acceptDelay" min="0" max="20"></label>
+  </div>
+
+  <h2>Map veto</h2>
+  <div class="card">
+    <label class="row">Auto ban maps <input type="checkbox" id="autoBan"></label>
+    <label class="row sub">Delay (seconds) <input type="number" id="banDelay" min="0" max="20"></label>
+  </div>
+
+  <h2>Sound</h2>
+  <div class="card">
+    <label class="row">Match found sound <input type="checkbox" id="matchSound"></label>
+    <div class="row sub"><label for="soundFile">Sound</label><span class="pick"><select id="soundFile"></select><button id="soundTest" title="Test sound">▶</button></span></div>
+    <label class="row sub">Start from (seconds) <input type="number" id="soundStart" min="0" step="0.1"></label>
+    <label class="row sub">Volume (%) <input type="number" id="soundVolume" min="0" max="100"></label>
+  </div>
+  </div>
+
+  <div class="col">
+  <h2>Ban order (top = first)</h2>
+  <ol id="list"></ol>
+  </div>
+  </div>
+  <script src="defaults.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
