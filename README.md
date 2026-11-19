@@ -144,6 +144,16 @@ Faceit-Autopilot/
 
 </details>
 
+## How to release
+
+1. Update `"version"` in [`manifest.json`](manifest.json) to match the release version (for example, `"1.0.0"`), then commit your changes.
+2. Create and push a version tag:
+   ```bash
+   git tag v1.0.0 && git push --tags
+   ```
+3. GitHub Actions ([`build-installers.yml`](.github/workflows/build-installers.yml)) will validate the extension, package `faceit-autopilot-<version>-chromium.zip`, upload it as the **`installers`** workflow artifact, and attach it to a new GitHub Release.
+4. Download the packaged extension from the repository's **Releases** page (or from the **`installers`** artifact under the **Actions** tab for manual `workflow_dispatch` runs).
+
 ## Contributing
 
 Issues and pull requests are welcome on [GitHub](https://github.com/projectGloria/Faceit-Autopilot). Since the extension has no build step, edit the files directly and click **Reload** on `chrome://extensions` to test your changes.

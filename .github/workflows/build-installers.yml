@@ -1,0 +1,92 @@
+name: Build Extension Package
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Package Chromium Extension
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate manifest and version
+        id: meta
+        run: |
+          jq empty manifest.json
+          MANIFEST_VERSION=$(jq -r '.version' manifest.json)
+          if [ -z "$MANIFEST_VERSION" ] || [ "$MANIFEST_VERSION" = "null" ]; then
+            echo "::error::manifest.json is missing a valid version field."
+            exit 1
+          fi
+
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            TAG_VERSION="${GITHUB_REF_NAME#v}"
+            if [ "$TAG_VERSION" != "$MANIFEST_VERSION" ]; then
+              echo "::error::Tag version (${TAG_VERSION}) does not match manifest.json version (${MANIFEST_VERSION}). Update manifest.json before tagging."
+              exit 1
+            fi
+            VERSION="$TAG_VERSION"
+          else
+            VERSION="$MANIFEST_VERSION"
+          fi
+
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Syntax-check JavaScript files
+        run: |
+          node --check defaults.js
+          node --check content.js
+          node --check popup.js
+
+      - name: Package extension into installers/
+        run: |
+          mkdir -p installers
+          OUT="installers/faceit-autopilot-${{ steps.meta.outputs.version }}-chromium.zip"
+          zip -r -9 "$OUT" \
+            manifest.json \
+            content.js \
+            defaults.js \
+            popup.html \
+            popup.js \
+            icons \
+            sounds
+          ls -lh installers/
+
+      - name: Upload installers artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: installers
+          path: installers/*
+          if-no-files-found: error
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download installers artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: installers
+          path: installers
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: installers/*
+          generate_release_notes: true
